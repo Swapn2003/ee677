@@ -13,30 +13,54 @@ import io
 from google.oauth2 import service_account
 from googleapiclient.discovery import build
 from googleapiclient.http import MediaFileUpload
+import os
+from dotenv import load_dotenv
 
-app = Flask(__name__)
 
-# URL of the website
-url = 'https://eal.iitk.ac.in'
+# Load environment variables from .env file
+load_dotenv()
 
-# Google Drive configuration
-# SERVICE_ACCOUNT_FILE = "ee677project-f6a83a843635.json"
+# Access variables
+url = os.getenv('EXTRACTION_URL')
+FOLDER_ID = os.getenv('GDRIVE_FOLDER_ID')
+SCOPES = [os.getenv('GDRIVE_SCOPES')]
+
+# Configure Service Account Info with variables
 SERVICE_ACCOUNT_INFO = {
-  "type": "service_account",
-  "project_id": "ee677project",
-  "private_key_id": "f6a83a843635c8d894cdad6bcd00e0b0238d38c6",
-  "private_key": "-----BEGIN PRIVATE KEY-----\nMIIEvwIBADANBgkqhkiG9w0BAQEFAASCBKkwggSlAgEAAoIBAQDLZ+y002VxCLeh\nBSUMTfbARjqGzCqn8B+TtvqirMWq8mJCHZoS89cStFEwLV6xqBx1XtfDeEXgcxiP\ng/c3uPscdWaUpTUtPWE6AsninmR6nB/KLfBE9UWPILSo9FohTHAhMjmj/DS6S3zd\nQVbTReZVoUGyGTuXJQb/N8mFXj1V12U7Sp/hfmvY8tkIi9Mk3LW8n2IrjWbIgL+k\nO8MxLC0u2AQ/PTcnA6A2JAZz5VBhtkkOBgEi0kFTfoasJswZYgQDwp+asbZGaH8q\nx4B+unpGd8DpbxmYSMu8sUFSc11c3MNxXZlkE9Ii160IwAMEJv/7LEFxAqEy+2eu\nfw+hIE/lAgMBAAECggEAHfF66hUN+OQvTBfwH+3rkNswdcmLz1R3rDd35rIHw1Dn\n4BMa1wa9tuDZQX4G/kuLgke8/DyHZNxCAFaNR88GaxET/HaO682pCMYs/BxpxEGZ\neG+SJZn0bHaEbIl+1H9mflc2HwrbTurFQzkBfsaVJYPrTObkBoMKkvrzwptgl3Mu\nFwmXHWiTv2359baaTtq+jitSJ5yeyo1/Biwvo+BjMO6kmBCjdfHOsCMTUbSfxPvw\nft4JCy1AIW0LoqPeEqVCtNAE3HL0RMLc0/ubUQIvY4Xln8D2d5bZarQmtNvuL+Ec\n/YBt58ttLclkDqQnRX+aarMShBDXUc8W59mJJCGIXQKBgQD9qdGFKX5gleMD1Tty\n3KV6aWf/DxU0s7/S3xUyRBINdRG9BWBsQrq8kEp4xzkaOsJR3mGprvpljbh4YqdV\nL5nD5GaeBhFk30ef0tvYbrR/zidotzCVhPEIxkTtjOfn9eQTEOwehOox1njkHv4b\naL0KtYSyajyxGA+q1OBDRkpXZwKBgQDNR5c1Z3CDMxhbneqUKdT2StfscuiWOmPj\nE3MZB+tVDWh7JRjfD3w8NsovuqGuqFhO0X/rnircQj6IErCh6aZJCUol4rbso7+U\nbj4Xr/91PLDvwVlfSthwJCwFsmMo4W5SWybV1hi3HNlKtBAYuT4SVCEuIEpRt/zj\nBs5wASXK0wKBgQCXIQQpuC0JUoPslrBSoM8efYpuVggmXCmfczXnutKene8xlPB7\nz8395mHYT6nfzL5VlI7PT+bzdlo/r1dO04tjQMM6xxa56KV9vV0qN9rmgmbMZshV\nbN1GgwoyFc9dTgzSpzRmgn4dr1BbaXOv1Nk8diVXPyBlypYbC7WJn2lPZQKBgQCq\np9CSChtkRw8B40eHwzsTQec9381yTrqJpbqy3X2L6Kiqb428qu/6UwZFJZ+SRsub\nQtlYtNYm5D99+iOzhz3BTCLDWjX+hqcXK4sdQChce4cQ2qmE6gEDQV8DoWiELNz9\nRGAFt4Y2fJo8W3NiSmXK8Pvgj+GZDB8FUbw/KwUTFwKBgQD5teyf9KuGbYsd+YZi\naM7JPFRpezVbq9DEGNhkZ5RTkLkwxTTT2+t/mQ8osiIwDhSyCxt5Fo3epaY9g2RZ\nGNVT7eSY7UR8ryBY3Ahxaf0dpZD1T6gL2vD742FyhqGwg5hP0z0EjmXLt9WdfAkz\nTOxUmogvW720rgY2nKP62F5aeQ==\n-----END PRIVATE KEY-----\n",
-  "client_email": "ee677project@ee677project.iam.gserviceaccount.com",
-  "client_id": "107150382352112745087",
-  "auth_uri": "https://accounts.google.com/o/oauth2/auth",
-  "token_uri": "https://oauth2.googleapis.com/token",
-  "auth_provider_x509_cert_url": "https://www.googleapis.com/oauth2/v1/certs",
-  "client_x509_cert_url": "https://www.googleapis.com/robot/v1/metadata/x509/ee677project%40ee677project.iam.gserviceaccount.com",
-  "universe_domain": "googleapis.com"
+    "type": os.getenv('GDRIVE_TYPE'),
+    "project_id": os.getenv('GDRIVE_PROJECT_ID'),
+    "private_key_id": os.getenv('GDRIVE_PRIVATE_KEY_ID'),
+    "private_key": os.getenv('GDRIVE_PRIVATE_KEY').replace("\\n", "\n"),  # Ensure formatting
+    "client_email": os.getenv('GDRIVE_CLIENT_EMAIL'),
+    "client_id": os.getenv('GDRIVE_CLIENT_ID'),
+    "auth_uri": os.getenv('GDRIVE_AUTH_URI'),
+    "token_uri": os.getenv('GDRIVE_TOKEN_URI'),
+    "auth_provider_x509_cert_url": os.getenv('GDRIVE_AUTH_PROVIDER_CERT_URL'),
+    "client_x509_cert_url": os.getenv('GDRIVE_CLIENT_CERT_URL')
 }
 
-SCOPES = ['https://www.googleapis.com/auth/drive.file']
-FOLDER_ID = '1yoGBP0vAxieJfdbew66Mtt_0j7KNRzxE'  # Replace with your folder ID
+app = Flask(__name__)
+# # URL of the website
+# url = 'https://eal.iitk.ac.in'
+
+# # Google Drive configuration
+# # SERVICE_ACCOUNT_FILE = "ee677project-f6a83a843635.json"
+# SERVICE_ACCOUNT_INFO = {
+#   "type": "service_account",
+#   "project_id": "ee677project",
+#   "private_key_id": "f6a83a843635c8d894cdad6bcd00e0b0238d38c6",
+#   "private_key": "-----BEGIN PRIVATE KEY-----\nMIIEvwIBADANBgkqhkiG9w0BAQEFAASCBKkwggSlAgEAAoIBAQDLZ+y002VxCLeh\nBSUMTfbARjqGzCqn8B+TtvqirMWq8mJCHZoS89cStFEwLV6xqBx1XtfDeEXgcxiP\ng/c3uPscdWaUpTUtPWE6AsninmR6nB/KLfBE9UWPILSo9FohTHAhMjmj/DS6S3zd\nQVbTReZVoUGyGTuXJQb/N8mFXj1V12U7Sp/hfmvY8tkIi9Mk3LW8n2IrjWbIgL+k\nO8MxLC0u2AQ/PTcnA6A2JAZz5VBhtkkOBgEi0kFTfoasJswZYgQDwp+asbZGaH8q\nx4B+unpGd8DpbxmYSMu8sUFSc11c3MNxXZlkE9Ii160IwAMEJv/7LEFxAqEy+2eu\nfw+hIE/lAgMBAAECggEAHfF66hUN+OQvTBfwH+3rkNswdcmLz1R3rDd35rIHw1Dn\n4BMa1wa9tuDZQX4G/kuLgke8/DyHZNxCAFaNR88GaxET/HaO682pCMYs/BxpxEGZ\neG+SJZn0bHaEbIl+1H9mflc2HwrbTurFQzkBfsaVJYPrTObkBoMKkvrzwptgl3Mu\nFwmXHWiTv2359baaTtq+jitSJ5yeyo1/Biwvo+BjMO6kmBCjdfHOsCMTUbSfxPvw\nft4JCy1AIW0LoqPeEqVCtNAE3HL0RMLc0/ubUQIvY4Xln8D2d5bZarQmtNvuL+Ec\n/YBt58ttLclkDqQnRX+aarMShBDXUc8W59mJJCGIXQKBgQD9qdGFKX5gleMD1Tty\n3KV6aWf/DxU0s7/S3xUyRBINdRG9BWBsQrq8kEp4xzkaOsJR3mGprvpljbh4YqdV\nL5nD5GaeBhFk30ef0tvYbrR/zidotzCVhPEIxkTtjOfn9eQTEOwehOox1njkHv4b\naL0KtYSyajyxGA+q1OBDRkpXZwKBgQDNR5c1Z3CDMxhbneqUKdT2StfscuiWOmPj\nE3MZB+tVDWh7JRjfD3w8NsovuqGuqFhO0X/rnircQj6IErCh6aZJCUol4rbso7+U\nbj4Xr/91PLDvwVlfSthwJCwFsmMo4W5SWybV1hi3HNlKtBAYuT4SVCEuIEpRt/zj\nBs5wASXK0wKBgQCXIQQpuC0JUoPslrBSoM8efYpuVggmXCmfczXnutKene8xlPB7\nz8395mHYT6nfzL5VlI7PT+bzdlo/r1dO04tjQMM6xxa56KV9vV0qN9rmgmbMZshV\nbN1GgwoyFc9dTgzSpzRmgn4dr1BbaXOv1Nk8diVXPyBlypYbC7WJn2lPZQKBgQCq\np9CSChtkRw8B40eHwzsTQec9381yTrqJpbqy3X2L6Kiqb428qu/6UwZFJZ+SRsub\nQtlYtNYm5D99+iOzhz3BTCLDWjX+hqcXK4sdQChce4cQ2qmE6gEDQV8DoWiELNz9\nRGAFt4Y2fJo8W3NiSmXK8Pvgj+GZDB8FUbw/KwUTFwKBgQD5teyf9KuGbYsd+YZi\naM7JPFRpezVbq9DEGNhkZ5RTkLkwxTTT2+t/mQ8osiIwDhSyCxt5Fo3epaY9g2RZ\nGNVT7eSY7UR8ryBY3Ahxaf0dpZD1T6gL2vD742FyhqGwg5hP0z0EjmXLt9WdfAkz\nTOxUmogvW720rgY2nKP62F5aeQ==\n-----END PRIVATE KEY-----\n",
+#   "client_email": "ee677project@ee677project.iam.gserviceaccount.com",
+#   "client_id": "107150382352112745087",
+#   "auth_uri": "https://accounts.google.com/o/oauth2/auth",
+#   "token_uri": "https://oauth2.googleapis.com/token",
+#   "auth_provider_x509_cert_url": "https://www.googleapis.com/oauth2/v1/certs",
+#   "client_x509_cert_url": "https://www.googleapis.com/robot/v1/metadata/x509/ee677project%40ee677project.iam.gserviceaccount.com",
+#   "universe_domain": "googleapis.com"
+# }
+
+# SCOPES = ['https://www.googleapis.com/auth/drive.file']
+# FOLDER_ID = '1yoGBP0vAxieJfdbew66Mtt_0j7KNRzxE'  # Replace with your folder ID
 # Function to upload a file to Google Drive
 def upload_to_drive(file_name, new_df):
     credentials = service_account.Credentials.from_service_account_info(SERVICE_ACCOUNT_INFO, scopes=SCOPES)
