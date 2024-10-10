@@ -15,7 +15,7 @@ from googleapiclient.discovery import build
 from googleapiclient.http import MediaFileUpload
 import os
 from dotenv import load_dotenv
-from webdriver_manager.firefox import GeckoDriverManager
+# from webdriver_manager.firefox import GeckoDriverManager
 from selenium.webdriver.firefox.service import Service as FirefoxService
 
 os.system("apt-get update")
