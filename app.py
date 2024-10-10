@@ -18,13 +18,14 @@ from dotenv import load_dotenv
 # from webdriver_manager.firefox import GeckoDriverManager
 from selenium.webdriver.firefox.service import Service as FirefoxService
 
+
 os.system("apt-get update")
 os.system("apt-get install -y firefox")
 os.system("apt-get install -y wget")
 os.system("wget https://github.com/mozilla/geckodriver/releases/download/v0.32.0/geckodriver-v0.32.0-linux64.tar.gz")
 os.system("tar -xvzf geckodriver-v0.32.0-linux64.tar.gz")
 os.system("chmod +x geckodriver")
-os.system("mv geckodriver /usr/local/bin/")
+
 
 # Load environment variables from .env file
 load_dotenv()
@@ -105,7 +106,7 @@ def extract_data():
         # driver = webdriver.Firefox(options=options)
         options = FirefoxOptions()
         options.add_argument("--headless")
-        driver = webdriver.Firefox(service=FirefoxService("/usr/local/bin/geckodriver"), options=options)
+        driver = webdriver.Firefox(service=FirefoxService("./geckodriver"), options=options)
         
 
         try:
