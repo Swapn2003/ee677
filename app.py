@@ -106,8 +106,8 @@ def extract_data():
         # driver = webdriver.Firefox(options=options)
         options = FirefoxOptions()
         options.add_argument("--headless")
-        driver = webdriver.Firefox(service=FirefoxService("./geckodriver"), options=options)
-        
+        driver = webdriver.Firefox(service=FirefoxService("/usr/local/bin/geckodriver"), options=options)
+
 
         try:
             # Open the website
