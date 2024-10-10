@@ -12,12 +12,13 @@ RUN apt-get update && \
     apt-get clean && \
     rm -rf /var/lib/apt/lists/*
 
-# Download the latest version of GeckoDriver
-RUN wget -q "https://github.com/mozilla/geckodriver/releases/latest/download/geckodriver-v0.34.0-linux64.tar.gz" \
+# Download a specific version of GeckoDriver
+RUN wget -q "https://github.com/mozilla/geckodriver/releases/download/v0.34.0/geckodriver-v0.34.0-linux64.tar.gz" \
     && tar -xvzf geckodriver-v0.34.0-linux64.tar.gz \
     && chmod +x geckodriver \
     && mv geckodriver /usr/local/bin/ \
     && rm geckodriver-v0.34.0-linux64.tar.gz
+
 
 
 # Copy the current directory contents into the container at /app
