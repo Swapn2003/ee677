@@ -4,11 +4,15 @@ FROM python:3.11-slim
 # Set the working directory
 WORKDIR /app
 
-# Install necessary packages
+# Install necessary packages and required dependencies for Firefox
 RUN apt-get update && \
     apt-get install -y \
     firefox-esr \
-    wget && \
+    wget \
+    bzip2 \
+    libgtk-3-0 \
+    libdbus-glib-1-2 \
+    libxt6 && \
     apt-get clean && \
     rm -rf /var/lib/apt/lists/*
 
@@ -18,8 +22,6 @@ RUN wget -q "https://github.com/mozilla/geckodriver/releases/download/v0.34.0/ge
     && chmod +x geckodriver \
     && mv geckodriver /usr/local/bin/ \
     && rm geckodriver-v0.34.0-linux64.tar.gz
-
-
 
 # Copy the current directory contents into the container at /app
 COPY . .
